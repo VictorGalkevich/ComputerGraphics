@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversion</title>
+    <style>
+        .cringe {
+            margin-left: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+        }
+
+        .type {
+            display: flex;
+        }
+
+        .slider {
+            width: 300px;
+            margin: 10px 0;
+        }
+
+        .slider_cmyk {
+            width: 300px;
+            margin: 10px 0;
+        }
+
+        .slider_hsl {
+            width: 300px;
+            margin: 10px 0;
+        }
+
+        .color-box {
+            width: 100%;
+            height: 100px;
+            margin-top: 20px;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Converter</h1>
+
+<div class="ool">
+    <div class="loo">
+        <div class="type">
+            <label>RGB</label>
+            <div class="cringe">
+                <p>Red</p>
+                <input type="range" id="red" class="slider" min="0" max="255" value="128">
+                <input type="text" id="tred" class="text_rgb" min="0" max="255" value="128">
+            </div>
+            <div class="cringe">
+                <p>Green</p>
+                <input type="range" id="green" class="slider" min="0" max="255" value="128">
+                <input type="text" id="tgreen" class="text_rgb" min="0" max="255" value="128">
+            </div>
+            <div class="cringe">
+                <p>Blue</p>
+                <input type="range" id="blue" class="slider" min="0" max="255" value="128">
+                <input type="text" id="tblue" class="text_rgb" min="0" max="255" value="128">
+            </div>
+        </div>
+
+        <div class="type">
+            <label>CMYK</label>
+            <div class="cringe">
+                <p>Cyan</p>
+                <input type="range" id="cyan" class="slider_cmyk" min="0" max="100" value="0">
+                <input type="text" id="tcyan" class="text_cmyk" min="0" max="100" value="0">
+            </div>
+            <div class="cringe">
+                <p>Magenta</p>
+                <input type="range" id="magenta" class="slider_cmyk" min="0" max="100" value="0">
+                <input type="text" id="tmagenta" class="text_cmyk" min="0" max="100" value="0">
+            </div>
+            <div class="cringe">
+                <p>Yellow</p>
+                <input type="range" id="yellow" class="slider_cmyk" min="0" max="100" value="0">
+                <input type="text" id="tyellow" class="text_cmyk" min="0" max="100" value="0">
+            </div>
+            <div class="cringe">
+                <p>Key</p>
+                <input type="range" id="key" class="slider_cmyk" min="0" max="100" value="0">
+                <input type="text" id="tkey" class="text_cmyk" min="0" max="100" value="0">
+            </div>
+        </div>
+
+        <div class="type">
+            <label>HSV</label>
+            <div class="cringe">
+                <p>Hue</p>
+                <input type="range" id="hue" class="slider_hsl" min="0" max="360" value="180">
+                <input type="text" id="thue" class="text_hsv" min="0" max="360" value="180">
+            </div>
+            <div class="cringe">
+                <p>Saturation</p>
+                <input type="range" id="saturation" class="slider_hsl" min="0" max="100" value="50">
+                <input type="text" id="tsaturation" class="text_hsv" min="0" max="100" value="60">
+            </div>
+            <div class="cringe">
+                <p>Value</p>
+                <input type="range" id="value" class="slider_hsl" min="0" max="100" value="50">
+                <input type="text" id="tvalue" class="text_hsv" min="0" max="100" value="60">
+            </div>
+        </div>
+    </div>
+    <div class="loo">
+        <div class="color-box" id="colorBox"></div>
+    </div>
+</div>
+
+<script>
+    function updateRgb() {
+        const r = parseInt(document.getElementById('red').value);
+        const g = parseInt(document.getElementById('green').value);
+        const b = parseInt(document.getElementById('blue').value);
+
+        convertFromRgb(r, g, b);
+    }
+
+    function updateRgbText() {
+
+        let r = parseInt(document.getElementById('tred').value === '' ? 0 : document.getElementById('tred').value);
+        r = r > 255 ? 255 : r;
+        let g = parseInt(document.getElementById('tgreen').value === '' ? 0 : document.getElementById('tgreen').value);
+        g = g > 255 ? 255 : g;
+        let b = parseInt(document.getElementById('tblue').value === '' ? 0 : document.getElementById('tblue').value);
+        b = b > 255 ? 255 : b;
+
+        convertFromRgb(r, g, b);
+
+        document.getElementById('red').value = r;
+        document.getElementById('green').value = g;
+        document.getElementById('blue').value = b;
+    }
+
+    function convertFromRgb(r, g, b) {
+        //to cmyk
+
+        let rs = r / 255;
+        let gs = g / 255;
+        let bs = b / 255;
+        let k = 1 - Math.max(rs, gs, bs);
+        document.getElementById("cyan").value = 1 - k === 0 ? 0 : 100 * ((1 - rs - k) / (1 - k));
+        document.getElementById("magenta").value = 1 - k === 0 ? 0 : 100 * ((1 - gs - k) / (1 - k));
+        document.getElementById("yellow").value = 1 - k === 0 ? 0 : 100 * ((1 - bs - k) / (1 - k));
+        document.getElementById("key").value = 100 * k;
+
+        //to hsv
+        let cmax = Math.max(rs, gs, bs);
+        let cmin = Math.min(rs, gs, bs);
+
+        let delta = cmax - cmin;
+
+        let h = 60 * ((rs - gs) / delta + 4);
+        if (delta === 0) {
+            h = 0;
+        } else if (cmax === rs) {
+            h = 60 * (Math.abs((gs - bs)) / delta % 6);
+        } else if (cmax === gs) {
+            h = 60 * ((bs - rs) / delta + 2);
+        }
+
+        let s = cmax === 0 ? 0 : delta / cmax * 100;
+
+        let v = cmax * 100;
+
+        document.getElementById('hue').value = h;
+        document.getElementById('saturation').value = s;
+        document.getElementById('value').value = v;
+
+        document.getElementById('tred').value = r;
+        document.getElementById('tgreen').value = g;
+        document.getElementById('tblue').value = b;
+
+        document.getElementById('tcyan').value = 1 - k === 0 ? 0 : 100 * ((1 - rs - k) / (1 - k));
+        document.getElementById('tmagenta').value = 1 - k === 0 ? 0 : 100 * ((1 - gs - k) / (1 - k));
+        document.getElementById('tyellow').value = 1 - k === 0 ? 0 : 100 * ((1 - bs - k) / (1 - k));
+        document.getElementById('tkey').value = 100 * k;
+
+        document.getElementById('thue').value = h;
+        document.getElementById('tsaturation').value = s;
+        document.getElementById('tvalue').value = v;
+
+        document.getElementById('colorBox').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function updateCmyk() {
+        const c = parseInt(document.getElementById('cyan').value) / 100;
+        const m = parseInt(document.getElementById('magenta').value) / 100;
+        const y = parseInt(document.getElementById('yellow').value) / 100;
+        const k = parseInt(document.getElementById('key').value) / 100;
+
+        convertFromCmyk(c, m, y, k);
+    }
+
+    function updateCmykText() {
+        let c = parseInt(document.getElementById('tcyan').value === '' ? 0 : document.getElementById('tcyan').value);
+        c = c > 100 ? 100 : c;
+        c /= 100;
+        let m = parseInt(document.getElementById('tmagenta').value === '' ? 0 : document.getElementById('tmagenta').value);
+        m = m > 100 ? 100 : m;
+        m /= 100;
+        let y = parseInt(document.getElementById('tyellow').value === '' ? 0 : document.getElementById('tyellow').value);
+        y = y > 100 ? 100 : y;
+        y /= 100;
+        let k = parseInt(document.getElementById('tkey').value === '' ? 0 : document.getElementById('tkey').value);
+        k = k > 100 ? 100 : k;
+        k /= 100;
+
+        convertFromCmyk(c, m, y, k);
+
+        document.getElementById('cyan').value = c * 100;
+        document.getElementById('magenta').value = m * 100;
+        document.getElementById('yellow').value = y * 100;
+        document.getElementById('key').value = k * 100;
+    }
+
+    function convertFromCmyk(c, m, y, k) {
+        //to rgb
+        let r = 255 * (1 - c) * (1 - k);
+        let g = 255 * (1 - m) * (1 - k);
+        let b = 255 * (1 - y) * (1 - k);
+
+        document.getElementById('red').value = r;
+        document.getElementById('green').value = g;
+        document.getElementById('blue').value = b;
+
+        //to hsv
+        let rs = r / 255;
+        let gs = g / 255;
+        let bs = b / 255;
+
+        let cmax = Math.max(rs, gs, bs);
+        let cmin = Math.min(rs, gs, bs);
+
+        let delta = cmax - cmin;
+
+        let h = 60 * ((rs - gs) / delta + 4);
+        if (delta === 0) {
+            h = 0;
+        } else if (cmax === rs) {
+            h = 60 * (Math.abs((gs - bs)) / delta % 6);
+        } else if (cmax === gs) {
+            h = 60 * ((bs - rs) / delta + 2);
+        }
+
+        let s = cmax === 0 ? 0 : delta / cmax * 100;
+
+        let v = cmax * 100;
+
+        document.getElementById('hue').value = h;
+        document.getElementById('saturation').value = s;
+        document.getElementById('value').value = v;
+
+        document.getElementById('tred').value = r;
+        document.getElementById('tgreen').value = g;
+        document.getElementById('tblue').value = b;
+
+        document.getElementById('tcyan').value = c * 100;
+        document.getElementById('tmagenta').value = m * 100;
+        document.getElementById('tyellow').value = y * 100;
+        document.getElementById('tkey').value = k * 100;
+
+        document.getElementById('thue').value = h;
+        document.getElementById('tsaturation').value = s;
+        document.getElementById('tvalue').value = v;
+
+        document.getElementById('colorBox').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function updateHsv() {
+        const h = parseInt(document.getElementById('hue').value);
+        const s = parseInt(document.getElementById('saturation').value) / 100;
+        const v = parseInt(document.getElementById('value').value) / 100;
+
+        convertFromHsv(h, s, v);
+    }
+
+    function updateHsvText() {
+        let h = parseInt(document.getElementById('thue').value === '' ? 0 : document.getElementById('thue').value);
+        h = h > 360 ? 360 : h;
+        let s = parseInt(document.getElementById('tsaturation').value === '' ? 0 : document.getElementById('tsaturation').value);
+        s = s > 100 ? 100 : s;
+        s /= 100;
+        let v = parseInt(document.getElementById('tvalue').value === '' ? 0 : document.getElementById('tvalue').value);
+        v = v > 100 ? 100 : v;
+        v /= 100;
+
+        convertFromHsv(h, s, v);
+
+        document.getElementById('hue').value = h;
+        document.getElementById('saturation').value = s * 100;
+        document.getElementById('value').value = v * 100;
+    }
+
+    function convertFromHsv(h, s, v) {
+        //to rgb
+        let c = v * s;
+        let x = c * (1 - Math.abs(h / 60 % 2 - 1));
+        let m = v - c;
+        let rs = c, gs = 0, bs = x;
+        if (h < 60) {
+            rs = c;
+            gs = x;
+            bs = 0;
+        } else if (h < 120) {
+            rs = x;
+            gs = c;
+            bs = 0;
+        } else if (h < 180) {
+            rs = 0;
+            gs = c;
+            bs = x;
+        } else if (h < 240) {
+            rs = 0;
+            gs = x;
+            bs = c;
+        } else if (h < 300) {
+            rs = x;
+            gs = 0;
+            bs = c;
+        }
+        let r = (rs + m) * 255;
+        let g = (gs + m) * 255;
+        let b = (bs + m) * 255;
+
+        document.getElementById('red').value = r;
+        document.getElementById('green').value = g;
+        document.getElementById('blue').value = b;
+
+
+        //to cmyk
+        let rsh = r / 255;
+        let gsh = g / 255;
+        let bsh = b / 255;
+        let k = 1 - Math.max(rsh, gsh, bsh);
+        document.getElementById("cyan").value = 1 - k === 0 ? 0 : 100 * ((1 - rsh - k) / (1 - k)) | 0;
+        document.getElementById("magenta").value = 1 - k === 0 ? 0 : 100 * ((1 - gsh - k) / (1 - k)) | 0;
+        document.getElementById("yellow").value = 1 - k === 0 ? 0 : 100 * ((1 - bsh - k) / (1 - k)) | 0;
+        document.getElementById("key").value = 100 * k;
+
+        document.getElementById('tred').value = r;
+        document.getElementById('tgreen').value = g;
+        document.getElementById('tblue').value = b;
+
+        document.getElementById('tcyan').value = 1 - k === 0 ? 0 : 100 * ((1 - rsh - k) / (1 - k));
+        document.getElementById('tmagenta').value = 1 - k === 0 ? 0 : 100 * ((1 - gsh - k) / (1 - k));
+        document.getElementById('tyellow').value = 1 - k === 0 ? 0 : 100 * ((1 - bsh - k) / (1 - k));
+        document.getElementById('tkey').value = 100 * k;
+
+        document.getElementById('thue').value = h;
+        document.getElementById('tsaturation').value = s * 100;
+        document.getElementById('tvalue').value = v * 100;
+
+
+        document.getElementById('colorBox').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    }
+
+
+    document.querySelectorAll('.slider').forEach(slider => {
+        slider.addEventListener('input', updateRgb);
+    });
+
+    document.querySelectorAll('.slider_cmyk').forEach(slider => {
+        slider.addEventListener('input', updateCmyk);
+    });
+
+    document.querySelectorAll('.slider_hsl').forEach(slider => {
+        slider.addEventListener('input', updateHsv);
+    });
+
+    document.querySelectorAll('.text_rgb').forEach(slider => {
+        slider.addEventListener('input', updateRgbText);
+    });
+
+    document.querySelectorAll('.text_cmyk').forEach(slider => {
+        slider.addEventListener('input', updateCmykText);
+    });
+
+    document.querySelectorAll('.text_hsv').forEach(slider => {
+        slider.addEventListener('input', updateHsvText);
+    });
+
+    updateRgb();
+</script>
+
+</body>
+</html>

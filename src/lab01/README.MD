@@ -1,0 +1,1 @@
+Данная программа предназначена для конвертации цветов из систем RGB, CMYK, HSV между собой![Screenshot 2024-10-11 at 11.44.01 PM.png](..%2F..%2F..%2F..%2F..%2F..%2Fvar%2Ffolders%2Frs%2Fs0f6p3fj0113bn3lzh84rsbc0000gn%2FT%2FTemporaryItems%2FNSIRD_screencaptureui_a803S8%2FScreenshot%202024-10-11%20at%2011.44.01%E2%80%AFPM.png)
